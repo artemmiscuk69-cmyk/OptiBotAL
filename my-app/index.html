@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>OptiBotX PRO Asset Pack</title>
+
+<style>
+
+/* --- СТИЛИ ДЛЯ ЭКРАНА ВХОДА --- */
+
+#login-overlay {
+
+position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+
+background: #050510; z-index: 99999;
+
+display: flex; justify-content: center; align-items: center; flex-direction: column;
+
+}
+
+.login-box {
+
+background: #0b0b1a; padding: 30px; border-radius: 12px;
+
+border: 1px solid #1a1a2e; text-align: center; width: 280px;
+
+box-shadow: 0 0 20px rgba(91, 77, 255, 0.2);
+
+}
+
+.login-box h2 { color: white; margin: 0 0 20px 0; font-family: 'Segoe UI', sans-serif; }
+
+.pass-input {
+
+width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
+
+border: 1px solid #333; background: #161625; color: white;
+
+font-size: 16px; outline: none; box-sizing: border-box; text-align: center;
+
+}
+
+.pass-input:focus { border-color: #5b4dff; }
+
+.enter-btn {
+
+width: 100%; padding: 12px; background: #5b4dff; border: none;
+
+border-radius: 8px; color: white; font-weight: bold; cursor: pointer;
+
+font-size: 16px; transition: 0.3s;
+
+}
+
+.enter-btn:hover { background: #4a3dcf; }
+
+#error-msg { color: #ff4d4d; font-size: 12px; margin-top: 10px; min-height: 15px; font-family: sans-serif; }
+
+
+
+/* --- ОСНОВНЫЕ СТИЛИ --- */
+
+body {
+
+margin: 0; padding: 0; background: #050510; color: white;
+
+font-family: 'Segoe UI', sans-serif; height: 100vh;
+
+display: flex; justify-content: center; align-items: center; overflow: hidden;
+
+}
+
+.app-container {
+
+width: 100%; max-width: 400px; height: 98vh; background: #0b0b1a;
+
+display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
+
+position: relative; border: 1px solid #1a1a2e; border-radius: 12px;
+
+}
+
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+.logo h1 { font-size: 18px; margin: 0; color: #fff; }
+
+.logo span { color: #5b4dff; font-weight: 800; text-shadow: 0 0 8px #5b4dff; }
+
+.lang-btn { background: #1e1e2f; border: 1px solid #333; color: white; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
+
+
+
+select { width: 100%; background: #161625; color: white; border: 1px solid #334; padding: 12px; border-radius: 10px; margin-bottom: 10px; outline: none; appearance: none; cursor: pointer; }
+
+
+
+.chart-box {
+
+width: 100%; height: 280px; background: #0a0a1a;
+
+border-radius: 10px; margin-bottom: 15px; border: 1px solid #1e1e2f;
+
+position: relative; overflow: hidden;
+
+}
+
+#mainChart { width: 100%; height: 100%; display: block; }
+
+
+
+.tf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+
+
+.tf-btn {
+
+background: #151525; border: 1px solid #1e1e2f; color: #666;
+
+padding: 10px; border-radius: 8px; font-size: 12px; cursor: pointer;
+
+transition: all 0.3s ease;
+
+}
+
+
+.tf-btn:hover {
+
+transform: scale(1.1);
+
+background: #25253a;
+
+color: white;
+
+border-color: #5b4dff;
+
+z-index: 10;
+
+}
+
+
+
+.tf-btn.active { background: #5b4dff; color: white; border-color: #7d72ff; box-shadow: 0 0 15px rgba(91, 77, 255, 0.3); }
+
+.tf-btn.active:hover { transform: scale(1.1); background: #4a3dcf; }
+
+
+
+.analyze-btn { width: 100%; background: #5b4dff; border: none; padding: 16px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin: 10px 0; }
+
+
+.status-area { display: flex; justify-content: center; align-items: center; gap: 10px; height: 30px; margin-bottom: 10px; }
+
+.dot { width: 12px; height: 12px; background: #2575fc; border-radius: 50%; box-shadow: 0 0 10px #2575fc; }
+
+
+.result-display { width: 100%; padding: 12px; background: #161625; border: 1px solid #333; border-radius: 10px; text-align: center; font-weight: bold; display: none; margin-bottom: 10px; }
+
+
+
+.calc-section { background: #0a0a1a; padding: 12px; border-radius: 12px; border: 1px solid #1e1e2f; }
+
+.calc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+
+#sum-input { background: transparent; border: none; color: white; font-size: 16px; width: 60%; border-bottom: 1px solid #333; outline: none; }
+
+.sum-btn { width: 100%; background: #353555; border: none; padding: 8px; border-radius: 6px; color: white; cursor: pointer; font-size: 14px; }
+
+
+
+#snow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<div id="login-overlay">
+
+<div class="login-box">
+
+<h2>OptiBotX Security</h2>
+
+<input type="number" id="password-input" class="pass-input" placeholder="Введите код доступа">
+
+<button onclick="checkAccess()" class="enter-btn">ВОЙТИ</button>
+
+<div id="error-msg"></div>
+
+</div>
+
+</div>
+
+
+
+<div class="app-container" id="main-app" style="display: none;">
+
+<canvas id="snow-layer"></canvas>
+
+
+
+<header>
+
+<div class="logo">
+
+<h1>AI OptiBotX <span>PRO</span></h1>
+
+<div id="sub-header" style="font-size: 10px; color: #444;">Выбери валютную пару</div>
+
+</div>
+
+<button id="langBtn" class="lang-btn">RU</button>
+
+</header>
+
+
+
+<select id="pair" onchange="initChart()">
+
+<option selected>EUR/USD</option>
+
+<option>AUD/CHF OTC</option><option>AUD/NZD OTC</option><option>AUD/USD OTC</option>
+
+<option>EUR/TRY OTC</option><option>GBP/AUD OTC</option><option>JOD/CNY OTC</option>
+
+<option>NZD/USD OTC</option><option>QAR/CNY OTC</option><option>UAH/USD OTC</option>
+
+<option>USD/CAD OTC</option><option>USD/MXN OTC</option><option>USD/MYR OTC</option>
+
+<option>USD/PHP OTC</option><option>USD/PKR OTC</option><option>ZAR/USD OTC</option>
+
+<option>CHF/NOK OTC</option><option>SAR/CNY OTC</option><option>AUD/CAD OTC</option>
+
+<option>USD/JPY OTC</option><option>EUR/AUD</option><option>GBP/AUD</option>
+
+<option>TND/USD OTC</option><option>LBP/USD OTC</option><option>CAD/JPY OTC</option>
+
+<option>AUD/JPY</option><option>USD/BRL OTC</option><option>GBP/JPY</option>
+
+<option>GBP/USD OTC</option><option>OMR/CNY OTC</option><option>AUD/CAD</option>
+
+<option>EUR/CHF</option><option>CHF/JPY OTC</option><option>GBP/USD</option>
+
+<option>USD/INR OTC</option><option>USD/CHF</option><option>USD/COP OTC</option>
+
+<option>CHF/JPY</option><option>EUR/JPY OTC</option><option>AUD/CHF</option>
+
+<option>EUR/JPY</option><option>USD/JPY</option><option>CAD/JPY</option>
+
+<option>EUR/HUF OTC</option><option>USD/RUB OTC</option><option>BHD/CNY OTC</option>
+
+<option>USD/CAD</option><option>USD/VND OTC</option><option>CAD/CHF OTC</option>
+
+<option>AED/CNY OTC</option><option>USD/THB OTC</option><option>AUD/USD</option>
+
+<option>EUR/GBP OTC</option><option>EUR/NZD OTC</option><option>USD/DZD OTC</option>
+
+<option>NZD/JPY OTC</option><option>NGN/USD OTC</option><option>AUD/JPY OTC</option>
+
+<option>USD/CNH OTC</option><option>USD/CHF OTC</option><option>KES/USD OTC</option>
+
+<option>GBP/JPY OTC</option><option>EUR/RUB OTC</option><option>USD/CLP OTC</option>
+
+<option>USD/ARS OTC</option><option>USD/IDR OTC</option><option>USD/SGD OTC</option>
+
+<option>YER/USD OTC</option><option>GBP/CAD</option><option>EUR/GBP</option>
+
+<option>EUR/CAD</option><option>CAD/CHF</option><option>GBP/CHF</option>
+
+<option>EUR/CHF OTC</option><option>EUR/USD OTC</option><option>MAD/USD OTC</option>
+
+<option>USD/BDT OTC</option><option>USD/EGP OTC</option>
+
+</select>
+
+
+
+<div class="chart-box"><canvas id="mainChart"></canvas></div>
+
+
+
+<div class="tf-grid">
+
+<button class="tf-btn" onclick="selectTf(this)">5s</button>
+
+<button class="tf-btn" onclick="selectTf(this)">10s</button>
+
+<button class="tf-btn" onclick="selectTf(this)">15s</button>
+
+<button class="tf-btn" onclick="selectTf(this)">30s</button>
+
+<button class="tf-btn active" onclick="selectTf(this)">1m</button>
+
+<button class="tf-btn" onclick="selectTf(this)">2m</button>
+
+<button class="tf-btn" onclick="selectTf(this)">5m</button>
+
+<button class="tf-btn" onclick="selectTf(this)">15m</button>
+
+</div>
+
+
+
+<button id="anBtn" class="analyze-btn" onclick="startAnalysis()">Анализировать</button>
+
+
+
+<div id="status" class="status-area">
+
+<div class="dot"></div> <span id="wait-msg">Ожидание...</span>
+
+</div>
+
+
+
+<div id="result" class="result-display"></div>
+
+
+
+<div class="calc-section">
+
+<div style="font-size: 11px; color: #444; margin-bottom: 5px;" id="calc-label">Калькулятор:</div>
+
+<div class="calc-row">
+
+<input type="number" id="sum-input" placeholder="0" oninput="updateCalc()">
+
+<div style="color: #00ff88;">= <span id="profit">0.0000</span></div>
+
+</div>
+
+<button class="sum-btn" id="sum-btn-label">+ Сумма</button>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+function checkAccess() {
+
+const pass = document.getElementById('password-input').value;
+
+const overlay = document.getElementById('login-overlay');
+
+const app = document.getElementById('main-app');
+
+const err = document.getElementById('error-msg');
+
+if(pass === '7072010') {
+
+overlay.style.display = 'none'; app.style.display = 'flex';
+
+if(window.initChart) window.initChart();
+
+if(window.setupSnow) window.setupSnow();
+
+} else {
+
+err.innerText = "Неверный код доступа!";
+
+}
+
+}
+
+
+
+const canvas = document.getElementById('mainChart');
+
+const ctx = canvas.getContext('2d');
+
+const dpr = window.devicePixelRatio || 1;
+
+let candles = [];
+
+
+
+function setupCanvas() {
+
+const rect = canvas.parentElement.getBoundingClientRect();
+
+canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+
+ctx.scale(dpr, dpr);
+
+canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px';
+
+}
+
+
+
+function initChart() {
+
+setupCanvas(); candles = [];
+
+let price = 100;
+
+for(let i=0; i<18; i++) {
+
+let open = price;
+
+let close = price + (Math.random() - 0.5) * 15;
+
+candles.push({ open, close, high: Math.max(open, close) + 8, low: Math.min(open, close) - 8 });
+
+price = close;
+
+}
+
+render();
+
+}
+
+
+
+function render() {
+
+const w = canvas.width / dpr; const h = canvas.height / dpr;
+
+ctx.clearRect(0,0, w, h);
+
+const allPrices = candles.flatMap(c => [c.high, c.low]);
+
+const minP = Math.min(...allPrices); const maxP = Math.max(...allPrices);
+
+const range = (maxP - minP) || 10;
+
+const getY = (p) => h - ((p - minP) / range) * (h * 0.7) - (h * 0.15);
+
+const candleWidth = w / candles.length;
+
+candles.forEach((c, i) => {
+
+const x = i * candleWidth + (candleWidth * 0.15);
+
+const isUp = c.close >= c.open;
+
+const color = isUp ? '#00ff88' : '#ff4d4d';
+
+ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+
+ctx.beginPath(); ctx.moveTo(x + (candleWidth * 0.35), getY(c.high)); ctx.lineTo(x + (candleWidth * 0.35), getY(c.low)); ctx.stroke();
+
+const bodyY = Math.min(getY(c.open), getY(c.close));
+
+const bodyH = Math.max(Math.abs(getY(c.open) - getY(c.close)), 2);
+
+ctx.fillRect(x, bodyY, candleWidth * 0.7, bodyH);
+
+});
+
+}
+
+
+
+setInterval(() => {
+
+if(candles.length === 0) return;
+
+candles.shift();
+
+let last = candles[candles.length-1];
+
+let nO = last.close;
+
+let nC = nO + (Math.random() - 0.5) * 8;
+
+candles.push({ open: nO, close: nC, high: Math.max(nO, nC) + 4, low: Math.min(nO, nC) - 4 });
+
+render();
+
+}, 1000);
+
+
+
+const sCanvas = document.getElementById('snow-layer');
+
+const sCtx = sCanvas.getContext('2d');
+
+let flakes = [];
+
+function setupSnow() {
+
+sCanvas.width = sCanvas.parentElement.clientWidth;
+
+sCanvas.height = sCanvas.parentElement.clientHeight;
+
+flakes = Array.from({length: 40}, () => ({x: Math.random()*sCanvas.width, y: Math.random()*sCanvas.height, r: Math.random()*2+1, d: Math.random()+0.5}));
+
+}
+
+function drawSnow() {
+
+sCtx.clearRect(0,0,sCanvas.width, sCanvas.height);
+
+sCtx.fillStyle = "rgba(255,255,255,0.4)";
+
+flakes.forEach(f => {
+
+sCtx.beginPath(); sCtx.arc(f.x, f.y, f.r, 0, Math.PI*2); sCtx.fill();
+
+f.y += f.d; if(f.y > sCanvas.height) f.y = -5;
+
+});
+
+requestAnimationFrame(drawSnow);
+
+}
+
+
+
+const dict = {
+
+RU: { sub: "Выбери валютную пару", an: "Анализировать", wait: "Ожидание...", calc: "Калькулятор:", sum: "+ Сумма", up: "ВВЕРХ ", down: "ВНИЗ " },
+
+EN: { sub: "Select pair", an: "Analyze", wait: "Waiting...", calc: "Calculator:", sum: "+ Sum", up: "BUY ", down: "SELL " },
+
+ES: { sub: "Elegir par", an: "Analizar", wait: "Espera...", calc: "Calculadora:", sum: "+ Suma", up: "ALZA ", down: "BAJA " }
+
+};
+
+let curLang = 'RU';
+
+document.getElementById('langBtn').onclick = function() {
+
+curLang = curLang === 'RU' ? 'EN' : (curLang === 'EN' ? 'ES' : 'RU');
+
+this.innerText = curLang;
+
+document.getElementById('sub-header').innerText = dict[curLang].sub;
+
+document.getElementById('anBtn').innerText = dict[curLang].an;
+
+document.getElementById('wait-msg').innerText = dict[curLang].wait;
+
+document.getElementById('calc-label').innerText = dict[curLang].calc;
+
+document.getElementById('sum-btn-label').innerText = dict[curLang].sum;
+
+};
+
+
+
+function startAnalysis() {
+
+const res = document.getElementById('result');
+
+const stat = document.getElementById('status');
+
+res.style.display = 'none'; stat.style.display = 'flex';
+
+setTimeout(() => {
+
+stat.style.display = 'none'; res.style.display = 'block';
+
+const isUp = Math.random() > 0.5;
+
+res.style.color = isUp ? '#00ff88' : '#ff4d4d';
+
+res.style.borderColor = isUp ? '#00ff88' : '#ff4d4d';
+
+res.innerHTML = `${dict[curLang][isUp?'up':'down']} (${Math.floor(Math.random()*15+82)}%)`;
+
+}, 1500);
+
+}
+
+
+
+/* --- ОБНОВЛЕННАЯ ЛОГИКА КАЛЬКУЛЯТОРА --- */
+
+function updateCalc() {
+
+const v = document.getElementById('sum-input').value;
+
+if (!v || v <= 0) {
+
+document.getElementById('profit').innerText = "0.0000";
+
+return;
+
+}
+
+// Формула: Сумма / 11
+
+const result = (parseFloat(v) / 11).toFixed(4);
+
+document.getElementById('profit').innerText = result;
+
+}
+
+
+
+function selectTf(btn) {
+
+document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+
+btn.classList.add('active');
+
+}
+
+
+
+window.onload = () => { setupSnow(); drawSnow(); };
+
+</script>
+
+</body>
+
+</html>
+
